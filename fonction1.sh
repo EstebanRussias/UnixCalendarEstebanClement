@@ -13,7 +13,7 @@ afficher_planning() {
 
     # Vérifier si le fichier existe
     if [[ ! -f $1 ]]; then
-        echo "Le fichier $1 n'existe pas."
+        echo "Le fichier $1 donné en argument n'as pas été trouvé !!!"
         return 1
     fi
 
