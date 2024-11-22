@@ -1,45 +1,34 @@
 #!/bin/bash
 
-#Clement 
+# auteur : Clément
 
-# Fonction pour afficher le planning
+# fonction pour afficher le planning
 afficher_planning() {
-    # Vérifier si le fichier a été passé en paramètre
     if [[ $# -ne 1 ]]; then
         echo "Usage: $0 <fichier.json>"
         return 1
     fi
-
-
-    # Vérifier si le fichier existe
+    # existe ?
     if [[ ! -f $1 ]]; then
-        echo "Le fichier $1 donné en argument n'as pas été trouvé !!!"
+        echo "Le fichier $1 donné en argument n'a pas été trouvé !!!"
         return 1
     fi
 
-
-    # Afficher l'en-tête
-    echo "Planning des cours de Mikael VALOT pour début octobre 2024 :"
+    echo "Planning des cours pour début octobre 2024 :"
     echo
 
-
-    # Extraire les données du fichier JSON et les afficher
+    # extraire les données du fichier JSON et les afficher
     jq -r '
     .rows[] |
     (.srvTimeCrDateFrom | sub("T.*"; "") | strptime("%Y-%m-%d") | strftime("%d %B %Y")) as $date |
-    # Formater les heures avec des zéros à gauche si nécessaire
-    ($date + " " +
-    "- " +
+    ($date + "\n" +
+    "Horaire : " +
     ((.timeCrTimeFrom / 100 | floor | tostring | if length == 1 then "0" + . else . end) + ":" +
     (.timeCrTimeFrom % 100 | tostring | if length == 1 then "0" + . else . end)) + " à " +
     ((.timeCrTimeTo / 100 | floor | tostring | if length == 1 then "0" + . else . end) + ":" +
-    (.timeCrTimeTo % 100 | tostring | if length == 1 then "0" + . else . end)) + " : " +
-    .prgoOfferingDesc + " (" + .srvTimeCrDelRoom + ")")' "$1"
+    (.timeCrTimeTo % 100 | tostring | if length == 1 then "0" + . else . end)) + "\n" +
+    "Cours : " + .prgoOfferingDesc + "\n" +
+    "Classe : " + (.srvTimeCrDelRoom | split(",") | .[1:3] | join(",")) + "\n")' "$1"
 }
 
-
-# Appel de la fonction avec le fichier passé en paramètre
 afficher_planning "$1"
-
-
-
